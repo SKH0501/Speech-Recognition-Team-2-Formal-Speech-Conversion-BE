@@ -2,11 +2,14 @@
 
 ## 📌 Overview
 
-이 프로젝트는 외국인 학습자를 위한 **존댓말 학습 음성 시스템**의 백엔드입니다.
-사용자의 음성을 입력받아 이를 텍스트로 변환(STT)하고,
+이 프로젝트는 외국인 학습자를 위한 **존댓말 학습 음성 시스템**의 백엔드입니다.  
+사용자의 음성을 입력받아 이를 텍스트로 변환(STT)하고,  
 상황에 맞는 존댓말 표현을 평가 및 피드백을 제공합니다.
 
-현재 단계는 **MVP (Minimum Viable Product)** 기준으로 설계되었으며,
+본 시스템은 단순히 GPT와 같은 외부 AI 모델을 호출하는 것이 아니라,  
+**존댓말 판단을 위한 규칙 기반 NLP 로직과 데이터 기반 분석을 결합한 구조**로 설계됩니다.
+
+현재 단계는 **MVP (Minimum Viable Product)** 기준으로 설계되었으며,  
 DB 없이 **세션 기반 stateless 구조 + in-memory 저장 방식**을 사용합니다.
 
 > ⚠️ 본 문서는 초기 설계 초안이며, 팀 논의를 통해 API 및 구조는 변경될 수 있습니다.
@@ -213,9 +216,11 @@ app/
 * FastAPI
 * Python 3.10+
 * STT: Whisper (planned)
-* NLP: GPT / rule-based
+* NLP:
+  - Rule-based honorific evaluation
+  - Dataset 기반 문장 분류 모델 (planned)
+  - (Optional) GPT 기반 자연어 피드백 생성
 * TTS: gTTS or external API
-
 ---
 
 ## 🧪 Development Strategy
@@ -231,9 +236,17 @@ app/
 
 ### Step 3
 
-* GPT 기반 평가 로직 추가
+* 존댓말 판단 로직 고도화
+  - Rule-based NLP (어미, 높임 표현 분석)
+  - Dataset 기반 문장 분류 모델 적용 (formal / informal / error type)
 
 ### Step 4
+
+* (Optional) GPT 기반 피드백 생성
+  - 자연스러운 교정 문장 생성
+  - rule-based 결과 보완
+
+### Step 5
 
 * TTS 연결
 
@@ -258,5 +271,8 @@ uvicorn app.main:app --reload
 
 ## 📌 Summary
 
-이 백엔드는 단순 REST API가 아니라,
+이 백엔드는 단순 REST API가 아니라,  
 **음성 기반 대화형 학습 흐름을 관리하는 "세션 기반 대화 엔진"**입니다.
+
+또한 본 시스템은 외부 AI 모델을 단순 호출하는 구조가 아니라,  
+**존댓말 판단을 위한 규칙 기반 NLP와 데이터 기반 분석을 결합한 하이브리드 구조**를 지향합니다.
