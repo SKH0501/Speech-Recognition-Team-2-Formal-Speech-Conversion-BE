@@ -2,15 +2,15 @@
 
 ## 📌 Overview
 
-이 프로젝트는 외국인 학습자를 위한 **존댓말 학습 음성 시스템**의 백엔드입니다.  
+이 프로젝트는 외국인 학습자를 위한 **존댓말 학습 음성 시스템의 백엔드**입니다.  
 사용자의 음성을 입력받아 이를 텍스트로 변환(STT)하고,  
-상황에 맞는 존댓말 표현을 평가 및 피드백을 제공합니다.
+상황에 맞는 존댓말 표현을 평가하여 교정 및 피드백을 제공합니다.
 
-본 시스템은 단순히 GPT와 같은 외부 AI 모델을 호출하는 것이 아니라,  
-**존댓말 판단을 위한 규칙 기반 NLP 로직과 데이터 기반 분석을 결합한 구조**로 설계됩니다.
+본 시스템은 단순히 외부 AI 모델을 호출하는 구조가 아니라,  
+**규칙 기반 NLP(rule-based)와 데이터 기반 분류 모델(classifier)을 결합한 하이브리드 구조**로 설계됩니다.
 
-현재 단계는 **MVP (Minimum Viable Product)** 기준으로 설계되었으며,  
-DB 없이 **세션 기반 stateless 구조 + in-memory 저장 방식**을 사용합니다.
+현재는 MVP(Minimum Viable Product) 단계로,  
+외부 DB 없이 **서버 메모리 기반(in-memory)의 세션 관리 구조**를 사용합니다.
 
 > ⚠️ 본 문서는 초기 설계 초안이며, 팀 논의를 통해 API 및 구조는 변경될 수 있습니다.
 
@@ -18,11 +18,12 @@ DB 없이 **세션 기반 stateless 구조 + in-memory 저장 방식**을 사용
 
 ## 🧠 Core Flow
 
-```text
+```
 사용자 음성 입력
 → STT (Speech-to-Text)
-→ 텍스트 분석 (존댓말 평가)
-→ 피드백 생성
+→ 텍스트 분석 (NLP: 존댓말 평가)
+→ 피드백 및 교정 문장 생성
+→ (선택) TTS (Text-to-Speech)
 → 응답 반환 (텍스트 / 음성)
 ```
 
@@ -30,19 +31,19 @@ DB 없이 **세션 기반 stateless 구조 + in-memory 저장 방식**을 사용
 
 ## 🚀 Features (MVP)
 
-* 카테고리 기반 대화 시작 (밥, 나이, 집 등)
-* 음성 입력 기반 문장 평가
-* 존댓말 적절성 판단
-* 교정 문장 및 피드백 제공
-* 간단한 대화 흐름 (2~3 turn)
+- 카테고리 기반 대화 시작 (밥, 나이, 집 등)
+- 음성 입력 기반 문장 평가
+- 존댓말 적절성 및 공손성 판단
+- 교정 문장 및 피드백 제공
+- 간단한 대화 흐름 (2~3 turn)
+- 텍스트 기반 평가 API 제공 (NLP 디버깅용)
 
 ---
 
 ## 🧩 API 명세서
 
 ### 📍 Base URL
-
-```text
+```
 http://localhost:8000/api
 ```
 
@@ -50,28 +51,27 @@ http://localhost:8000/api
 
 ### 1. 서버 상태 확인
 
-| 기능       | API       | Method |
-| -------- | --------- | ------ |
-| 서버 상태 확인 | `/health` | GET    |
+| 기능 | API | Method |
+|------|-----|--------|
+| 서버 상태 확인 | `/health` | GET |
 
 ---
 
 ### 2. 카테고리 리스트 조회
 
-| 기능      | API           | Method |
-| ------- | ------------- | ------ |
-| 카테고리 조회 | `/categories` | GET    |
+| 기능 | API | Method |
+|------|-----|--------|
+| 카테고리 조회 | `/categories` | GET |
 
 ---
 
 ### 3. 대화 세션 시작
 
-| 기능    | API               | Method |
-| ----- | ----------------- | ------ |
-| 세션 시작 | `/sessions/start` | POST   |
+| 기능 | API | Method |
+|------|-----|--------|
+| 세션 시작 | `/sessions/start` | POST |
 
 #### Request
-
 ```json
 {
   "category": "food",
@@ -81,7 +81,6 @@ http://localhost:8000/api
 ```
 
 #### Response
-
 ```json
 {
   "success": true,
@@ -96,33 +95,37 @@ http://localhost:8000/api
 
 ### 4. 음성 응답 평가 (핵심 API)
 
-| 기능    | API                                  | Method |
-| ----- | ------------------------------------ | ------ |
-| 음성 평가 | `/sessions/{sessionId}/turns/speech` | POST   |
+| 기능 | API | Method |
+|------|-----|--------|
+| 음성 평가 | `/sessions/{sessionId}/turns/speech` | POST |
 
 #### Content-Type
-
 ```
 multipart/form-data
 ```
 
 #### Request
-
-* audio: 음성 파일
+```
+audio: 음성 파일
+```
 
 #### Response
-
 ```json
 {
   "success": true,
   "data": {
     "transcript": "밥 먹었어?",
-    "isCorrect": false,
-    "feedback": "존댓말을 사용하는 것이 더 적절해요.",
-    "recommendedAnswer": "식사 하셨어요?",
+    "judgement": "INAPPROPRIATE",
+    "score": 28,
+    "feedback": "어르신께는 반말보다 존댓말을 사용하는 것이 더 적절해요.",
+    "errorTypes": [
+      "INFORMAL_ENDING",
+      "ROLE_MISMATCH"
+    ],
+    "recommendedAnswer": "식사하셨어요?",
     "alternatives": [
-      "식사 하셨어요?",
-      "밥 드셨어요?"
+      "식사하셨어요?",
+      "진지 잡수셨어요?"
     ],
     "nextAction": "RETRY",
     "nextQuestion": null
@@ -134,12 +137,11 @@ multipart/form-data
 
 ### 5. 텍스트 기반 평가 (디버깅용)
 
-| 기능     | API                                | Method |
-| ------ | ---------------------------------- | ------ |
-| 텍스트 평가 | `/sessions/{sessionId}/turns/text` | POST   |
+| 기능 | API | Method |
+|------|-----|--------|
+| 텍스트 평가 | `/sessions/{sessionId}/turns/text` | POST |
 
 #### Request
-
 ```json
 {
   "text": "밥 먹었어?"
@@ -150,23 +152,23 @@ multipart/form-data
 
 ### 6. 대화 세션 종료
 
-| 기능    | API                         | Method |
-| ----- | --------------------------- | ------ |
-| 세션 종료 | `/sessions/{sessionId}/end` | POST   |
+| 기능 | API | Method |
+|------|-----|--------|
+| 세션 종료 | `/sessions/{sessionId}/end` | POST |
 
 ---
 
 ### 7. TTS (피드백 음성 생성)
 
-| 기능  | API    | Method |
-| --- | ------ | ------ |
-| TTS | `/tts` | POST   |
+| 기능 | API | Method |
+|------|-----|--------|
+| TTS | `/tts` | POST |
 
 ---
 
 ## 🔁 Conversation Flow
 
-```text
+```
 1. 카테고리 선택
 → POST /sessions/start
 
@@ -174,19 +176,34 @@ multipart/form-data
 → POST /sessions/{sessionId}/turns/speech
 
 3. 평가 결과 반환
-→ feedback + recommended sentence
+→ transcript + judgement + feedback + 추천 문장
 
 4. 다음 행동
-→ RETRY (다시 말하기)
-→ NEXT (다음 질문)
-→ END (종료)
+→ RETRY / NEXT / END
 ```
+
+---
+
+## 🧠 NLP Architecture
+
+### Rule-based Evaluation
+- 종결어미 분석
+- 높임 어휘 사용 여부
+- 금지 표현 탐지
+- 대상(role) 기반 공손성 평가
+
+### Classifier (Planned)
+- 문장 공손성 분류
+
+### Feedback Generator
+- 오류 기반 피드백 생성
+- 교정 문장 제공
 
 ---
 
 ## 🗂️ Project Structure
 
-```text
+```
 app/
 ├── main.py
 ├── core/
@@ -203,52 +220,14 @@ app/
 │   ├── scenario_service.py
 │   ├── session_service.py
 │   ├── stt_service.py
-│   ├── evaluation_service.py
-│   └── tts_service.py
-├── data/
-│   └── scenarios.json
+│   ├── tts_service.py
+│   └── evaluation/
+│       ├── evaluator.py
+│       ├── rule_engine.py
+│       ├── classifier.py
+│       ├── feedback_generator.py
+│       └── response_builder.py
 ```
-
----
-
-## ⚙️ Tech Stack (Planned)
-
-* FastAPI
-* Python 3.10+
-* STT: Whisper (planned)
-* NLP:
-  - Rule-based honorific evaluation
-  - Dataset 기반 문장 분류 모델 (planned)
-  - (Optional) GPT 기반 자연어 피드백 생성
-* TTS: gTTS or external API
----
-
-## 🧪 Development Strategy
-
-### Step 1 (현재)
-
-* Fake pipeline (rule-based evaluation)
-* API 구조 확정
-
-### Step 2
-
-* STT (Whisper) 연결
-
-### Step 3
-
-* 존댓말 판단 로직 고도화
-  - Rule-based NLP (어미, 높임 표현 분석)
-  - Dataset 기반 문장 분류 모델 적용 (formal / informal / error type)
-
-### Step 4
-
-* (Optional) GPT 기반 피드백 생성
-  - 자연스러운 교정 문장 생성
-  - rule-based 결과 보완
-
-### Step 5
-
-* TTS 연결
 
 ---
 
@@ -261,18 +240,10 @@ uvicorn app.main:app --reload
 
 ---
 
-## 🤝 Collaboration Notes
-
-* 본 프로젝트는 MVP 기준 설계입니다.
-* API 및 구조는 팀 협의에 따라 변경될 수 있습니다.
-* 우선은 해당 구조를 기준으로 개발을 진행하고, 이후 AI 모델 연결 시 개선합니다.
-
----
-
 ## 📌 Summary
 
-이 백엔드는 단순 REST API가 아니라,  
-**음성 기반 대화형 학습 흐름을 관리하는 "세션 기반 대화 엔진"**입니다.
+이 백엔드는  
+**음성 기반 학습을 위한 세션 중심 대화 엔진**이며,
 
-또한 본 시스템은 외부 AI 모델을 단순 호출하는 구조가 아니라,  
-**존댓말 판단을 위한 규칙 기반 NLP와 데이터 기반 분석을 결합한 하이브리드 구조**를 지향합니다.
+👉 Rule-based + 학습 기반 NLP를 결합한  
+👉 설명 가능한 존댓말 평가 시스템을 목표로 합니다.
