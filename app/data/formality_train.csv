@@ -1,0 +1,7 @@
+﻿text,category,target_role,label
+밥 먹었어?,food,grandfather,inappropriate
+식사하셨어요?,food,grandfather,appropriate
+이름 뭐야?,name,grandfather,inappropriate
+성함이 어떻게 되세요?,name,grandfather,appropriate
+집 어디야?,home,grandfather,inappropriate
+댁이 어디세요?,home,grandfather,appropriate

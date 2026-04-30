@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\app\\core",
+    "\\app\\data",
+    "\\app\\routers",
+    "\\app\\schemas",
+    "\\app\\services",
+    "\\app\\services\\evaluation"
+  ],
+  "SelectedNode": "\\app\\main.py",
+  "PreviewInSolutionExplorer": false
+}
