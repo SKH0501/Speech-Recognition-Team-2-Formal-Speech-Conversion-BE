@@ -2,7 +2,7 @@
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers.sessions import router as sessions_router
-
+from app.routers.categories import router as categories_router
 
 app = FastAPI(title="Honorific Speech Trainer Backend")
 
@@ -14,6 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(categories_router)
 app.include_router(sessions_router)
 
 
@@ -22,13 +23,3 @@ def health():
     return {"success": True, "data": {"status": "ok"}}
 
 
-@app.get("/api/categories")
-def categories():
-    return {
-        "success": True,
-        "data": [
-            {"id": "food", "name": "밥"},
-            {"id": "name", "name": "이름"},
-            {"id": "home", "name": "집"},
-        ]
-    }

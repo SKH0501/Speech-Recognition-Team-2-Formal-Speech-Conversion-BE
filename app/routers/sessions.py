@@ -4,33 +4,44 @@ from app.core.session_store import session_store
 from app.schemas.session import StartSessionRequest
 from app.schemas.evaluation import TextEvaluationRequest
 from app.services.evaluation.evaluator import evaluate_text
-
+from app.services.scenario_service import (
+    get_first_step,
+    get_step,
+    get_next_step,
+    has_next_step,
+)
 
 router = APIRouter(prefix="/api/sessions", tags=["sessions"])
 
 
-PROMPTS = {
-    "food": "상대방이 밥을 먹었는지 물어보세요!",
-    "name": "상대방의 이름을 공손하게 물어보세요!",
-    "home": "상대방의 집이 어디인지 공손하게 물어보세요!",
-}
-
 
 @router.post("/start")
 def start_session(request: StartSessionRequest):
+    first_step = get_first_step(request.category,request.targetRole)
+    if not first_step:
+        raise HTTPException(
+            status_code = 400,
+            detail = "Unsupported category or targetRole",
+        )
+
     session = session_store.create_session(
         category=request.category,
         target_role=request.targetRole,
         language=request.language,
     )
 
-    prompt = PROMPTS.get(request.category, "공손한 표현으로 대화를 시작해보세요.")
-
     return {
         "success": True,
         "data": {
             "sessionId": session["sessionId"],
-            "prompt": prompt,
+            "category": session["category"],
+            "targetRole": session["targetRole"],
+            "currentStepIndex": session["currentStepIndex"],
+            "currentStepId": first_step["stepId"],
+            "turnType": first_step["turnType"],
+            "prompt": first_step["prompt"],
+            "systemUtterance": first_step.get("systemUtterance"),
+            "recommendedAnswers": first_step["recommendedAnswers"],
         }
     }
 
@@ -44,26 +55,62 @@ def evaluate_text_turn(session_id: str, request: TextEvaluationRequest):
     if session["ended"]:
         raise HTTPException(status_code=400, detail="Session already ended")
 
+    current_step = get_step(
+        category=session["category"],
+        target_role=session["targetRole"],
+        step_index=session["currentStepIndex"],
+    )
+
+    if not current_step:
+        session_store.end_session(session_id)
+        raise HTTPException(status_code=400, detail="Scenario step not found")
+
     result = evaluate_text(
         text=request.text,
         category=session["category"],
         target_role=session["targetRole"],
+        step=current_step,
     )
 
-    # 데모용 nextAction 단순 처리
-    next_action = "NEXT" if result["judgement"] == "APPROPRIATE" else "RETRY"
+    is_appropriate = result["judgement"] == "APPROPRIATE"
 
-    session["turn"] += 1
+    next_action = "RETRY"
     next_question = None
-    if next_action == "NEXT" and session["turn"] >= 2:
-        next_action = "END"
+    next_step = None
+
+    if is_appropriate:
+        if has_next_step(
+            category=session["category"],
+            target_role=session["targetRole"],
+            step_index=session["currentStepIndex"],
+        ):
+            session_store.advance_step(session_id)
+
+            next_step = get_step(
+                category=session["category"],
+                target_role=session["targetRole"],
+                step_index=session["currentStepIndex"],
+            )
+
+            next_action = "NEXT"
+            next_question = next_step["prompt"]
+        else:
+            session_store.end_session(session_id)
+            next_action = "END"
+    else:
+        session_store.increment_turn(session_id)
 
     return {
         "success": True,
         "data": {
             **result,
+            "currentStepId": current_step["stepId"],
+            "turnType": current_step["turnType"],
+            "prompt": current_step["prompt"],
+            "recommendedAnswers": current_step["recommendedAnswers"],
             "nextAction": next_action,
             "nextQuestion": next_question,
+            "nextStep": next_step,
         }
     }
 

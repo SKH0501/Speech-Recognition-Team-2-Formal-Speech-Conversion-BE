@@ -13,6 +13,7 @@ class SessionStore:
             "category": category,
             "targetRole": target_role,
             "language": language,
+            "currentStepIndex": 0,
             "turn": 0,
             "ended": False,
         }
@@ -21,6 +22,23 @@ class SessionStore:
 
     def get_session(self, session_id: str) -> Dict[str, Any] | None:
         return self.sessions.get(session_id)
+
+    def advance_step(self, session_id: str) -> Dict[str, Any] | None:
+        session = self.sessions.get(session_id)
+        if not session:
+            return None
+
+        session["currentStepIndex"] += 1
+        session["turn"] += 1
+        return session
+
+    def increment_turn(self, session_id: str) -> Dict[str, Any] | None:
+        session = self.sessions.get(session_id)
+        if not session:
+            return None
+
+        session["turn"] += 1
+        return session
 
     def end_session(self, session_id: str) -> bool:
         session = self.sessions.get(session_id)
