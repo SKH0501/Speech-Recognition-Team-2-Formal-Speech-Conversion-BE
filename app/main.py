@@ -21,5 +21,3 @@ app.include_router(sessions_router)
 @app.get("/api/health")
 def health():
     return {"success": True, "data": {"status": "ok"}}
-
-
