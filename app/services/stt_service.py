@@ -1,33 +1,39 @@
 import os
-from gtts import gTTS
+from openai import OpenAI
 
-class TTSService:
+class STTService:
     def __init__(self):
-        # 결과 음성 파일들을 임시로 저장할 폴더 생성
-        self.output_dir = "static/audio"
-        os.makedirs(self.output_dir, exist_ok=True)
+        # OpenAI API 키를 시스템 환경변수에서 가져옵니다.
+        # 키가 없다면 직접 텍스트로 "your-api-key"를 넣어도 됩니다.
+        self.api_key = os.getenv("OPENAI_API_KEY")
+        if not self.api_key:
+            print("⚠️ 경고: OPENAI_API_KEY 환경변수가 설정되지 않았습니다.")
+        
+        self.client = OpenAI(api_key=self.api_key)
 
-    def generate_speech(self, text: str, filename: str = "output.mp3") -> str:
+    def transcribe_audio(self, audio_file_path: str) -> str:
         """
-        텍스트를 음성(MP3) 파일로 변환하고 저장된 파일 경로를 반환합니다.
+        음성 파일을 입력받아 텍스트(transcript)로 변환합니다.
         """
-        if not text:
-            return ""
+        if not os.path.exists(audio_file_path):
+            raise FileNotFoundError(f"음성 파일을 찾을 수 없습니다: {audio_file_path}")
 
         try:
-            file_path = os.path.join(self.output_dir, filename)
-            
-            # 한국어(ko) 음성 생성
-            tts = gTTS(text=text, lang='ko', slow=False)
-            tts.save(file_path)
-            
-            print(f"🔊 TTS 파일 생성 완료: {file_path}")
-            return file_path
+            with open(audio_file_path, "rb") as audio_file:
+                # 한국어(ko) 학습 시스템이므로 language="ko"를 명시하여 인식률을 극대화합니다.
+                response = self.client.audio.transcriptions.create(
+                    model="whisper-1",
+                    file=audio_file,
+                    language="ko"
+                )
+            return response.text
         except Exception as e:
-            print(f"❌ TTS 오류 발생: {e}")
+            print(f"❌ STT 오류 발생: {e}")
             return ""
 
 # 로컬 단독 테스트용 코드
 if __name__ == "__main__":
-    tts = TTSService()
-    # tts.generate_speech("할아버지 진지 잡수셨어요?", "grandfather_ask.mp3")
+    # 테스트하고 싶은 음성 파일 경로를 넣고 실행해보세요.
+    stt = STTService()
+    # test_text = stt.transcribe_audio("test.wav")
+    # print("인식된 텍스트:", test_text)
