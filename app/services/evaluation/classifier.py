@@ -4,8 +4,8 @@ import joblib
 import pandas as pd
 
 
-BASE_DIR = Path(__file__).resolve().parents[3]
-MODEL_PATH = BASE_DIR / "models" / "formality_classifier.joblib"
+CURRENT_DIR = Path(__file__).resolve().parent
+MODEL_PATH = CURRENT_DIR / "formality_classifier.joblib"
 
 
 class FormalityClassifier:
@@ -13,11 +13,12 @@ class FormalityClassifier:
         if not MODEL_PATH.exists():
             raise FileNotFoundError(
                 f"Model file not found: {MODEL_PATH}. "
-                "Run train_classifier.py first."
+                "Run train_classifier.py first and place the joblib file in this folder."
             )
         self.model = joblib.load(MODEL_PATH)
 
     def predict(self, text: str, category: str, target_role: str) -> Dict[str, Any]:
+     
         row = pd.DataFrame(
             [{
                 "text": text,
@@ -26,6 +27,7 @@ class FormalityClassifier:
             }]
         )
 
+       
         pred = self.model.predict(row)[0]
 
         confidence = None
@@ -38,7 +40,7 @@ class FormalityClassifier:
             confidence = 0.5
 
         return {
-            "label": pred,  # appropriate / inappropriate
+            "label": pred,
             "confidence": confidence,
         }
 
