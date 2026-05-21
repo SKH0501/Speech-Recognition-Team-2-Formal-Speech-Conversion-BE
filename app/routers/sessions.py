@@ -101,9 +101,21 @@ def evaluate_text_turn(session_id: str, request: TextEvaluationRequest):
         session_store.increment_turn(session_id)
 
     return {
-        "success": True,
-        "data": {
-            **result,
+    "success": True,
+    "data": {
+        "transcript": result["transcript"],
+        "evaluation": {
+            "judgement": result["judgement"],
+            "score": result["score"],
+            "levels": result["levels"],
+            "errorTypes": result["errorTypes"],
+        },
+        "feedback": {
+            "message": result["feedback"],
+            "recommendedAnswer": result["recommendedAnswer"],
+            "alternatives": result["alternatives"],
+        },
+        "scenario": {
             "currentStepId": current_step["stepId"],
             "turnType": current_step["turnType"],
             "prompt": current_step["prompt"],
@@ -111,8 +123,10 @@ def evaluate_text_turn(session_id: str, request: TextEvaluationRequest):
             "nextAction": next_action,
             "nextQuestion": next_question,
             "nextStep": next_step,
-        }
+        },
+        "classifierResult": result.get("classifierResult"),
     }
+}
 
 
 @router.post("/{session_id}/end")
