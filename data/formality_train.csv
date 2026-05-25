@@ -1,7 +1,110 @@
-﻿text,category,target_role,label
-밥 먹었어?,food,grandfather,inappropriate
-식사하셨어요?,food,grandfather,appropriate
-이름 뭐야?,name,grandfather,inappropriate
-성함이 어떻게 되세요?,name,grandfather,appropriate
-집 어디야?,home,grandfather,inappropriate
-댁이 어디세요?,home,grandfather,appropriate
+﻿text,category,target_role,turn_type,label
+식사하셨어요?,food,grandfather,ask,appropriate
+진지 드셨습니까?,food,grandfather,ask,appropriate
+할아버지 식사하셨어요?,food,grandfather,ask,appropriate
+오늘 식사하셨습니까?,food,grandfather,ask,appropriate
+무엇을 드셨어요?,food,grandfather,ask,appropriate
+어떤 음식을 드셨어요?,food,grandfather,ask,appropriate
+네 밥을 먹었어요.,food,grandfather,answer,appropriate
+네 식사했습니다.,food,grandfather,answer,appropriate
+저는 김치찌개를 먹었어요.,food,grandfather,answer,appropriate
+저는 돈가스를 먹었어요.,food,grandfather,answer,appropriate
+네 식사했습니다.,food,grandfather,ask,inappropriate
+식사하셨어요?,food,grandfather,answer,inappropriate
+밥 먹었어?,food,grandfather,ask,inappropriate
+뭐 먹었어?,food,grandfather,ask,inappropriate
+응 먹었어,food,grandfather,answer,inappropriate
+뭐 먹었어?,food,friend,ask,appropriate
+너 점심 뭐 먹었어?,food,friend,ask,appropriate
+나 밥 먹었어,food,friend,answer,appropriate
+나는 삼겹살 먹었어.,food,friend,answer,appropriate
+나 밥 먹었어,food,friend,ask,inappropriate
+뭐 먹었어?,food,friend,answer,inappropriate
+진지 잡수셨어요?,food,friend,ask,inappropriate
+연세가 어떻게 되세요?,age,grandfather,ask,appropriate
+혹시 연세가 어떻게 되세요?,age,grandfather,ask,appropriate
+저는 열세 살이에요.,age,grandfather,answer,appropriate
+저는 13살입니다.,age,grandfather,answer,appropriate
+저는 13살입니다.,age,grandfather,ask,inappropriate
+연세가 어떻게 되세요?,age,grandfather,answer,inappropriate
+할아버지 몇 살이야?,age,grandfather,ask,inappropriate
+나 13살이야,age,grandfather,answer,inappropriate
+너 몇 살이야?,age,friend,ask,appropriate
+몇 살이야?,age,friend,ask,appropriate
+나는 열세 살이야.,age,friend,answer,appropriate
+나 13살이야.,age,friend,answer,appropriate
+나 13살이야.,age,friend,ask,inappropriate
+너 몇 살이야?,age,friend,answer,inappropriate
+연세가 어떻게 되십니까?,age,friend,ask,inappropriate
+성함이 어떻게 되세요?,name,grandfather,ask,appropriate
+존함이 어떻게 되세요?,name,grandfather,ask,appropriate
+제 이름은 김민수예요.,name,grandfather,answer,appropriate
+저는 김민수입니다.,name,grandfather,answer,appropriate
+제 이름은 김민수예요.,name,grandfather,ask,inappropriate
+성함이 어떻게 되세요?,name,grandfather,answer,inappropriate
+이름이 뭐야?,name,grandfather,ask,inappropriate
+김민수야.,name,grandfather,answer,inappropriate
+너 이름이 뭐야?,name,friend,ask,appropriate
+이름이 뭐야?,name,friend,ask,appropriate
+나는 김민수야.,name,friend,answer,appropriate
+내 이름은 김민수야.,name,friend,answer,appropriate
+내 이름은 김민수야.,name,friend,ask,inappropriate
+너 이름이 뭐야?,name,friend,answer,inappropriate
+성함이 어떻게 되세요?,name,friend,ask,inappropriate
+생신이 언제세요?,birthday,grandfather,ask,appropriate
+할아버지 생신이 언제세요?,birthday,grandfather,ask,appropriate
+생신 선물이에요.,birthday,grandfather,ask,appropriate
+생신 축하드려요. 선물 받으세요.,birthday,grandfather,ask,appropriate
+제 생일은 5월 10일이에요.,birthday,grandfather,answer,appropriate
+저는 5월 10일이 생일이에요.,birthday,grandfather,answer,appropriate
+감사합니다 할아버지.,birthday,grandfather,answer,appropriate
+선물 감사합니다.,birthday,grandfather,answer,appropriate
+제 생일은 5월 10일이에요.,birthday,grandfather,ask,inappropriate
+생신이 언제세요?,birthday,grandfather,answer,inappropriate
+할아버지 생일 언제야?,birthday,grandfather,ask,inappropriate
+고마워,birthday,grandfather,answer,inappropriate
+생일 축하해.,birthday,friend,ask,appropriate
+야 내 생일 파티 올래?,birthday,friend,ask,appropriate
+고마워 친구야.,birthday,friend,answer,appropriate
+생신 축하드립니다.,birthday,friend,ask,inappropriate
+할아버지 성함이 뭐야?,name,grandfather,ask,inappropriate
+밥 먹었어?,food,grandfather,ask,inappropriate
+진지 잡수셨습니까?,food,grandfather,ask,appropriate
+식사 하셨나요?,food,grandfather,ask,appropriate
+무얼 드셨어요?,food,grandfather,ask,appropriate
+점심 뭐 드셨어요?,food,grandfather,ask,appropriate
+네 식사했습니다.,food,grandfather,ask,inappropriate
+네 먹었어요.,food,grandfather,ask,inappropriate
+네 밥 먹었어요.,food,grandfather,order,appropriate
+저는 돈가스 먹었습니다.,food,grandfather,answer,appropriate
+김치찌개 먹었어요.,food,grandfather,answer,appropriate
+연세가 어떻게 되십니까?,age,grandfather,ask,appropriate
+할아버지 몇 살이야?,age,grandfather,ask,inappropriate
+할아버지 연세가 어떻게 돼?,age,grandfather,ask,inappropriate
+저는 13살입니다.,age,grandfather,answer,appropriate
+제 나이는 열세 살이에요.,age,grandfather,answer,appropriate
+나 몇 살이게?,age,grandfather,answer,inappropriate
+너 연세가 어떻게 되니?,age,friend,ask,inappropriate
+너 몇 살이야?,age,friend,ask,appropriate
+몇 살이야?,age,friend,ask,appropriate
+나 13살인데?,age,friend,answer,appropriate
+나는 열세 살이야.,age,friend,answer,appropriate
+네 13살입니다.,age,friend,answer,inappropriate
+성함이 어떻게 되십니까?,name,grandfather,ask,appropriate
+이름이 어떻게 되세요?,name,grandfather,ask,appropriate
+존함이 어떻게 되시나요?,name,grandfather,ask,appropriate
+제 이름은 김민수입니다.,name,grandfather,answer,appropriate
+저는 김민수라고 해요.,name,grandfather,answer,appropriate
+내 이름은 김민수야.,name,grandfather,answer,inappropriate
+너 이름이 뭐니?,name,friend,ask,appropriate
+이름이 뭐야?,name,friend,ask,appropriate
+너 성함이 어떻게 돼?,name,friend,ask,inappropriate
+난 김민수야.,name,friend,answer,appropriate
+내 이름 김민수야.,name,friend,answer,appropriate
+네 제 이름은 김민수입니다.,name,friend,answer,inappropriate
+생신이 언제십니까?,birthday,grandfather,ask,appropriate
+할아버지 생신이 언제시죠?,birthday,grandfather,ask,appropriate
+할아버지 생일이 언제야?,birthday,grandfather,ask,inappropriate
+생신 축하드려요 선물이에요.,birthday,grandfather,ask,appropriate
+할아버지 생일 축하해.,birthday,grandfather,ask,inappropriate
+제 생일은 5월 10일입니다.,birthday,grandfather,answer,appropriate
