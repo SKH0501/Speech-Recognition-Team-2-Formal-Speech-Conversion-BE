@@ -1,4 +1,7 @@
-﻿from typing import Any, Dict
+from app.services.evaluation.classifier import get_classifier
+from app.services.evaluation.rule_engine import detect_rule_errors 
+
+from typing import Any, Dict
 
 from app.services.evaluation.rule_engine import detect_rule_errors
 
@@ -35,7 +38,28 @@ def decide_judgement(levels: Dict[str, str], errors: list[str]) -> str:
 
     return "APPROPRIATE"
 
+def evaluate_text(text: str, category: str, target_role: str, step: Dict[str, Any]) -> Dict[str, Any]:
+    
+    
+    rule_result = detect_rule_errors(text=text, category=category, target_role=target_role, step=step)
+    errors = rule_result["errors"]
+    levels = rule_result["levels"]
 
+   
+    classifier_result = {"label": "appropriate", "confidence": 1.0}
+    try:
+        classifier = get_classifier()
+        classifier_result = classifier.predict(text=text, category=category, target_role=target_role)
+    except Exception as e:
+        print(f"분류기 에러: {e}")
+
+    
+    if classifier_result["label"] == "inappropriate":
+        if levels["naturalness"] == "HIGH":
+            levels["naturalness"] = "MEDIUM"
+        if levels["honorific"] == "HIGH":
+            levels["honorific"] = "MEDIUM"
+            
 def generate_rule_feedback(errors: list[str], step: Dict[str, Any]) -> str:
     recommended = step.get("recommendedAnswers", [])
     recommended_text = recommended[0] if recommended else "더 공손한 표현으로 말해보세요."
