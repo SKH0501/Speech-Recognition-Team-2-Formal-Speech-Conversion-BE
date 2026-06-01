@@ -30,9 +30,9 @@ CATEGORY_RULES = {
         "topic_words": ["이름", "성함", "존함"],
     },
     "birthday": {
-        "plain_words": ["생일"],
-        "honorific_words": ["생신"],
-        "topic_words": ["생일", "생신", "선물", "축하"],
+    "plain_words": ["생일"],
+    "honorific_words": ["생신"],
+    "topic_words": ["생일", "생신", "월", "일"],
     },
 }
 
@@ -89,19 +89,20 @@ STEP_INTENT_RULES = {
     },
 
     "birthday_grandfather_ask_birthday": {
-        "intent_words": ["생신", "생일", "언제"],
-        "question_required": True,
-    },
-    "birthday_grandfather_give_gift": {
-        "intent_words": ["생신", "선물", "축하", "드려요", "받으세요"],
-        "question_required": False,
+    "intent_words": ["생신", "생일", "언제"],
+    "question_required": True,
     },
     "birthday_grandfather_answer_birthday": {
-        "intent_words": ["제", "저는", "생일", "월", "일", "이에요"],
+        "intent_words": ["제", "저는", "생일", "월", "일", "이에요", "예요", "입니다"],
         "question_required": False,
     },
-    "birthday_grandfather_thank_gift": {
-        "intent_words": ["감사", "고맙", "선물"],
+
+    "birthday_friend_ask_birthday": {
+        "intent_words": ["생일", "언제"],
+        "question_required": True,
+    },
+    "birthday_friend_answer_birthday": {
+        "intent_words": ["생일", "월", "일", "이야"],
         "question_required": False,
     },
 }
@@ -454,79 +455,6 @@ def evaluate_step_context(text: str, step: Dict[str, Any]) -> Dict[str, Any]:
         if has_incomplete_ending(original_text):
             errors.append("INCOMPLETE_SENTENCE")
             context_level = "LOW"
-
-    return {
-        "errors": errors,
-        "contextLevel": context_level,
-    }
-    original_text = text.strip()
-    normalized_text = normalize(text)
-
-    step_id = step.get("stepId")
-    step_rule = STEP_INTENT_RULES.get(step_id)
-
-    if not step_rule:
-        return {
-            "errors": [],
-            "contextLevel": "HIGH",
-        }
-
-    errors: List[str] = []
-    context_level = "HIGH"
-
-    matched_recommended = matches_recommended_answer(original_text, step)
-
-    # 1. 이름 답변 단계 전용 예외 처리
-    # 예: "신경현이요", "민수요", "제 이름은 신경현입니다" 통과
-    if step_id == "name_grandfather_answer_name":
-        if is_name_answer_for_grandfather(original_text):
-            return {
-                "errors": [],
-                "contextLevel": "HIGH",
-            }
-    # 친구인 경우
-    if step_id == "name_friend_answer_name":
-        if is_name_answer_for_friend(original_text):
-            return {
-                "errors": [],
-                "contextLevel": "HIGH",
-            }
-        
-    
-    # 2. 기본 step intent 검사
-    intent_words = step_rule.get("intent_words", [])
-
-    if intent_words and not contains_any(normalized_text, intent_words):
-        if not matched_recommended:
-            errors.append("STEP_MISMATCH")
-            context_level = "LOW"
-
-    # 3. 질문형 검사
-    question_required = step_rule.get("question_required", False)
-
-    if question_required and not has_question_form(original_text):
-        if not matched_recommended:
-            errors.append("MISSING_QUESTION_FORM")
-            if context_level != "LOW":
-                context_level = "MEDIUM"
-
-    # 4. 음식 대답 단계 전용 검사
-    if step_id == "food_grandfather_answer_menu":
-        if has_question_word(original_text):
-            errors.append("MISSING_ANSWER_CONTENT")
-            if context_level != "LOW":
-                context_level = "MEDIUM"
-
-        if has_incomplete_ending(original_text):
-            errors.append("INCOMPLETE_SENTENCE")
-            context_level = "LOW"
-    # 친구 이름 답변 예외 추가
-    if step_id == "name_friend_answer_name":
-        if is_name_answer_for_friend(original_text):
-            return {
-                "errors": [],
-                "contextLevel": "HIGH",
-            }
 
     return {
         "errors": errors,

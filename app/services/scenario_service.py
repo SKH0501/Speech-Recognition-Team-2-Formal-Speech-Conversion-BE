@@ -96,36 +96,53 @@ SCENARIOS: Dict[str, Dict[str, List[Dict[str, Any]]]] = {
             },
         ],
     },
-    "birthday": {
-        "grandfather": [
-            {
-                "stepId": "birthday_grandfather_ask_birthday",
-                "turnType": "ask",
-                "prompt": "할아버지에게 생일을 공손하게 물어보세요.",
-                "recommendedAnswers": ["생신이 언제세요?", "할아버지 생신이 언제세요?"],
-            },
-            {
-                "stepId": "birthday_grandfather_give_gift",
-                "turnType": "ask",
-                "prompt": "할아버지에게 생일 선물을 드리는 말을 해보세요.",
-                "recommendedAnswers": ["생신 선물이에요.", "생신 축하드려요. 선물 받으세요."],
-            },
-            {
-                "stepId": "birthday_grandfather_answer_birthday",
-                "turnType": "answer",
-                "prompt": "할아버지가 생일을 물어봤습니다. 공손하게 대답해보세요.",
-                "systemUtterance": "학생 생일은 언제니?",
-                "recommendedAnswers": ["제 생일은 5월 10일이에요.", "저는 5월 10일이 생일이에요."],
-            },
-            {
-                "stepId": "birthday_grandfather_thank_gift",
-                "turnType": "answer",
-                "prompt": "할아버지가 생일 선물을 주셨습니다. 감사 인사를 해보세요.",
-                "systemUtterance": "생일 선물이다. 받아라.",
-                "recommendedAnswers": ["감사합니다, 할아버지.", "선물 감사합니다."],
-            },
-        ]
-    },
+   "birthday": {
+    "grandfather": [
+        {
+            "stepId": "birthday_grandfather_ask_birthday",
+            "turnType": "ask",
+            "prompt": "할아버지에게 생일을 공손하게 물어보세요.",
+            "recommendedAnswers": [
+                "생신이 언제세요?",
+                "할아버지 생신이 언제세요?",
+                "생신이 언제이신가요?"
+            ],
+        },
+        {
+            "stepId": "birthday_grandfather_answer_birthday",
+            "turnType": "answer",
+            "prompt": "할아버지가 생일을 물어봤습니다. 공손하게 대답해보세요.",
+            "systemUtterance": "나는 5월 1일이 생일이란다. 학생 생일은 언제니?",
+            "recommendedAnswers": [
+                "제 생일은 6월 3일이에요.",
+                "저는 6월 3일이 생일이에요.",
+                "6월 3일이에요."
+            ],
+        },
+    ],
+    "friend": [
+        {
+            "stepId": "birthday_friend_ask_birthday",
+            "turnType": "ask",
+            "prompt": "친구에게 생일을 물어보세요.",
+            "recommendedAnswers": [
+                "너 생일 언제야?",
+                "생일 언제야?"
+            ],
+        },
+        {
+            "stepId": "birthday_friend_answer_birthday",
+            "turnType": "answer",
+            "prompt": "친구가 생일을 물어봤습니다. 자연스럽게 대답해보세요.",
+            "systemUtterance": "나는 6월 9일이 생일이야. 너는 생일 언제야?",
+            "recommendedAnswers": [
+                "나는 6월 3일이 생일이야.",
+                "내 생일은 6월 3일이야.",
+                "6월 3일이야."
+            ],
+        },
+    ],
+}
 }
 
 
