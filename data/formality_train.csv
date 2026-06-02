@@ -108,3 +108,14 @@
 생신 축하드려요 선물이에요.,birthday,grandfather,ask,appropriate
 할아버지 생일 축하해.,birthday,grandfather,ask,inappropriate
 제 생일은 5월 10일입니다.,birthday,grandfather,answer,appropriate
+너 생일 언제야?,birthday,friend,ask,appropriate
+생일이 언제야?,birthday,friend,ask,appropriate
+혹시 생일이 언제니?,birthday,friend,ask,appropriate
+나는 6월 3일이 생일이야.,birthday,friend,answer,appropriate
+내 생일은 6월 3일이야.,birthday,friend,answer,appropriate
+6월 3일이야.,birthday,friend,answer,appropriate
+생신이 언제십니까?,birthday,friend,ask,inappropriate
+연세가 어떻게 되세요?,birthday,friend,ask,inappropriate
+제 생일은 5월 10일입니다.,birthday,friend,answer,inappropriate
+너 생일 언제야?,birthday,friend,answer,inappropriate
+나는 6월 3일이 생일이야.,birthday,friend,ask,inappropriate
