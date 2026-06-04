@@ -233,13 +233,17 @@ def evaluate_text(
     # 4. LLM 피드백 생성
     try:
         llm_result = generate_llm_feedback(
-            text=text,
-            category=category,
-            target_role=target_role,
-            context_match=levels.get("context") != "LOW",
-            politeness_level=levels.get("honorific", "MEDIUM"),
-            naturalness=levels.get("naturalness", "MEDIUM"),
-        )
+    text=text,
+    category=category,
+    target_role=target_role,
+    context_match=levels.get("context") != "LOW",
+    politeness_level=levels.get("honorific", "MEDIUM"),
+    naturalness=levels.get("naturalness", "MEDIUM"),
+    error_types=error_types,
+    step_id=step.get("stepId"),
+    prompt=step.get("prompt"),
+    recommended_answers=step.get("recommendedAnswers", []),
+)
 
         feedback = llm_result.get("feedback") or ""
         recommended_answer = llm_result.get("correctedText") or ""

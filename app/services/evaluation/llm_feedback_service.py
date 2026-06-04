@@ -27,6 +27,10 @@ def generate_llm_feedback(
     context_match: bool,
     politeness_level: str,
     naturalness: str,
+    error_types: list[str] | None = None,
+    step_id: str | None = None,
+    prompt: str | None = None,
+    recommended_answers: list[str] | None = None,
 ) -> Dict[str, Any]:
     """
     LLM에게 피드백, 교정 문장, 대체 표현을 요청한다.
@@ -39,6 +43,10 @@ def generate_llm_feedback(
 
 반드시 JSON만 반환해라.
 설명 문장, 마크다운, 코드블록은 절대 쓰지 마라.
+한국어로만 작성해라. 러시아어, 영어, 다른 언어를 절대 섞지 마라.
+같은 문장을 반복하지 마라.
+feedback은 최대 2문장으로 작성해라.
+correctedText는 recommendedAnswers가 있으면 그중 가장 자연스러운 문장을 우선 사용해라.
 
 반환 JSON 형식:
 {
@@ -47,26 +55,28 @@ def generate_llm_feedback(
   "alternatives": ["대체 표현 1", "대체 표현 2", "대체 표현 3"]
 }
 
-조건:
-- 피드백은 1~2문장으로 짧게 작성한다.
-- 학습자를 비난하지 않는다.
+판단 기준:
+- errorTypes에 INFORMAL_SPEECH가 있으면 반말 표현을 존댓말로 바꾸라고 피드백한다.
+- errorTypes에 MISSING_HONORIFIC_WORD가 있으면 높임 어휘를 사용하라고 피드백한다.
+- errorTypes에 OVERLY_POLITE가 있으면 친구에게는 조금 더 자연스러운 반말 표현을 쓰라고 피드백한다.
+- errorTypes에 STEP_MISMATCH가 있으면 현재 미션과 다른 표현이라고 피드백한다.
 - target_role이 grandfather이면 어르신께 말하는 상황으로 판단한다.
-- category가 food이면 밥/식사 관련 표현을 우선한다.
-- category가 name이면 이름/성함 관련 표현을 우선한다.
-- category가 home이면 집/댁 관련 표현을 우선한다.
-- category가 age이면 나이/연세 관련 표현을 우선한다.
-- category가 birthday이면 생일/생신 관련 표현을 우선한다.
+- target_role이 friend이면 친구에게 자연스럽게 말하는 상황으로 판단한다.
 - correctedText는 실제로 바로 사용할 수 있는 자연스러운 문장이어야 한다.
 """
 
     user_prompt = {
-        "userText": text,
-        "category": category,
-        "targetRole": target_role,
-        "contextMatch": context_match,
-        "politenessLevel": politeness_level,
-        "naturalness": naturalness,
-    }
+    "userText": text,
+    "category": category,
+    "targetRole": target_role,
+    "stepId": step_id,
+    "missionPrompt": prompt,
+    "contextMatch": context_match,
+    "politenessLevel": politeness_level,
+    "naturalness": naturalness,
+    "errorTypes": error_types or [],
+    "recommendedAnswers": recommended_answers or [],
+}
 
     client = _get_client()
 

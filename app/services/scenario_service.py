@@ -56,11 +56,15 @@ SCENARIOS: Dict[str, Dict[str, List[Dict[str, Any]]]] = {
                 "recommendedAnswers": ["너 몇 살이야?", "몇 살이야?"],
             },
             {
-                "stepId": "age_friend_answer_age",
-                "turnType": "answer",
-                "prompt": "친구가 나이를 물어봤습니다. 자연스럽게 대답해보세요.",
-                "systemUtterance": "너 몇 살이야?",
-                "recommendedAnswers": ["나는 열세 살이야.", "나 13살이야."],
+                    "stepId": "age_friend_answer_age",
+    "turnType": "answer",
+    "prompt": "친구가 나이를 물어봤습니다. 자연스럽게 대답해보세요.",
+    "systemUtterance": "나는 13살이야. 너는 몇 살이야?",
+    "recommendedAnswers": [
+        "나는 13살이야.",
+        "나 13살이야.",
+        "13살이야."
+    ],
             },
         ],
     },
@@ -88,11 +92,15 @@ SCENARIOS: Dict[str, Dict[str, List[Dict[str, Any]]]] = {
                 "recommendedAnswers": ["너 이름이 뭐야?", "이름이 뭐야?"],
             },
             {
-                "stepId": "name_friend_answer_name",
-                "turnType": "answer",
-                "prompt": "친구가 이름을 물어봤습니다. 자연스럽게 대답해보세요.",
-                "systemUtterance": "너 이름이 뭐야?",
-                "recommendedAnswers": ["나는 김민수야.", "내 이름은 김민수야."],
+                    "stepId": "name_friend_answer_name",
+    "turnType": "answer",
+    "prompt": "친구가 이름을 물어봤습니다. 자연스럽게 대답해보세요.",
+    "systemUtterance": "나는 민수야. 너는 이름이 뭐야?",
+    "recommendedAnswers": [
+        "나는 신경현이야.",
+        "내 이름은 신경현이야.",
+        "신경현이야."
+    ]
             },
         ],
     },
