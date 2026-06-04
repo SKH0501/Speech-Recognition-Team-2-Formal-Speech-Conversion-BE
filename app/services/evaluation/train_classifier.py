@@ -1,68 +1,70 @@
 ﻿from pathlib import Path
 import joblib
 import pandas as pd
+
 from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder
 
-# 프로젝트 최상단 폴더를 기준으로 경로 설정
+
 BASE_DIR = Path(__file__).resolve().parents[3]
 DATA_PATH = BASE_DIR / "data" / "formality_train.csv"
 MODEL_DIR = BASE_DIR / "models"
 MODEL_PATH = MODEL_DIR / "formality_classifier.joblib"
 
-def main():
-    # 1. 데이터 불러오기
-    df = pd.read_csv(DATA_PATH)
 
-    # 2. 필수 컬럼 확인
-    required_cols = {"text", "category", "target_role", "turn_type", "label"}
+FEATURE_COLUMNS = ["text", "category", "target_role", "turn_type"]
+TARGET_COLUMNS = ["contextMatch", "politenessLevel", "naturalness"]
+
+
+def main():
+    df = pd.read_csv(DATA_PATH, encoding="utf-8")
+
+    required_cols = set(FEATURE_COLUMNS + TARGET_COLUMNS)
     missing = required_cols - set(df.columns)
     if missing:
-        raise ValueError(f"데이터셋에 다음 컬럼이 누락되었습니다: {missing}")
+        raise ValueError(f"Missing columns: {missing}")
 
-    X = df[["text", "category", "target_role", "turn_type"]]
-    y = df["label"]
+    # 혹시 True/False가 bool로 읽혀도 문자열 라벨로 통일
+    df["contextMatch"] = df["contextMatch"].astype(str)
+    df["politenessLevel"] = df["politenessLevel"].astype(str).str.upper()
+    df["naturalness"] = df["naturalness"].astype(str).str.upper()
 
-    # 3. 
+    X = df[FEATURE_COLUMNS]
+    y = df[TARGET_COLUMNS]
+
     preprocessor = ColumnTransformer(
         transformers=[
+            ("text", TfidfVectorizer(ngram_range=(1, 2)), "text"),
             (
-                "text", 
-                TfidfVectorizer(
-                    ngram_range=(1, 1),       # 문장 구조 암기가 아닌, 핵심 단어 단품 검사
-                    token_pattern=r"(?u)\b\w+\b"
-                ), 
-                "text"
+                "meta",
+                OneHotEncoder(handle_unknown="ignore"),
+                ["category", "target_role", "turn_type"],
             ),
-            ("meta", OneHotEncoder(handle_unknown="ignore"), ["category", "target_role", "turn_type"]),
         ]
     )
 
-    # 4. 
+    base_classifier = LogisticRegression(max_iter=1000)
+
     model = Pipeline(
         steps=[
             ("preprocessor", preprocessor),
-            (
-                "classifier", 
-                RandomForestClassifier(
-                    n_estimators=200,       
-                    max_depth=6,             
-                    min_samples_leaf=1,      
-                    class_weight='balanced', 
-                    random_state=42         
-                )
-            ),
+            ("classifier", MultiOutputClassifier(base_classifier)),
         ]
     )
+
     model.fit(X, y)
 
-    # 5. 완성된 AI 모델을 파일로 저장
     MODEL_DIR.mkdir(parents=True, exist_ok=True)
     joblib.dump(model, MODEL_PATH)
-    print(f"✅ 정형 시나리오 최적화 모델 저장 완료: {MODEL_PATH}")
+
+    print(f"Saved model to {MODEL_PATH}")
+    print(f"Features: {FEATURE_COLUMNS}")
+    print(f"Targets: {TARGET_COLUMNS}")
+
 
 if __name__ == "__main__":
     main()
