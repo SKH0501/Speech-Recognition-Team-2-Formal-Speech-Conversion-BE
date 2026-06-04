@@ -8,8 +8,16 @@ from openai import OpenAI
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 MODEL = os.getenv("LLM_MODEL", "gpt-4.1-mini")
+
+
+def _get_client() -> OpenAI:
+    api_key = os.getenv("OPENAI_API_KEY")
+
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is not set")
+
+    return OpenAI(api_key=api_key)
 
 
 def generate_llm_feedback(
@@ -22,7 +30,7 @@ def generate_llm_feedback(
 ) -> Dict[str, Any]:
     """
     LLM에게 피드백, 교정 문장, 대체 표현을 요청한다.
-    실패하면 예외를 발생시키므로 evaluator.py에서 fallback 처리하는 것을 권장.
+    실패하면 예외를 발생시키고 evaluator.py에서 fallback 처리한다.
     """
 
     system_prompt = """
@@ -59,6 +67,8 @@ def generate_llm_feedback(
         "politenessLevel": politeness_level,
         "naturalness": naturalness,
     }
+
+    client = _get_client()
 
     response = client.responses.create(
         model=MODEL,
