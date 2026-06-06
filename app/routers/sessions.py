@@ -100,6 +100,10 @@ def evaluate_text_turn(session_id: str, request: TextEvaluationRequest):
     else:
         session_store.increment_turn(session_id)
 
+    session["scenarioHistory"].append({"role": "user", "content": request.text})
+    if next_question:
+        session["scenarioHistory"].append({"role": "assistant", "content": next_question})
+
     return {
     "success": True,
     "data": {
