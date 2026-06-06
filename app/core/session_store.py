@@ -16,6 +16,10 @@ class SessionStore:
             "currentStepIndex": 0,
             "turn": 0,
             "ended": False,
+            # 
+            "scenarioHistory": [], 
+            "isFreeTalk": False,
+            "freeTalkHistory": [],
         }
         self.sessions[session_id] = session
         return session
@@ -45,6 +49,13 @@ class SessionStore:
         if not session:
             return False
         session["ended"] = True
+        return True
+
+    def start_free_talk(self, session_id: str) -> bool:
+        session = self.sessions.get(session_id)
+        if not session:
+            return False
+        session["isFreeTalk"] = True
         return True
 
 
