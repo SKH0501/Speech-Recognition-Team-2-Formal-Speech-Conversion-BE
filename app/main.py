@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers.sessions import router as sessions_router
 from app.routers.categories import router as categories_router
-
+from app.routers import freetalk
 app = FastAPI(title="Honorific Speech Trainer Backend")
 
 app.add_middleware(
@@ -16,7 +16,7 @@ app.add_middleware(
 
 app.include_router(categories_router)
 app.include_router(sessions_router)
-
+app.include_router(freetalk.router)
 
 @app.get("/api/health")
 def health():
