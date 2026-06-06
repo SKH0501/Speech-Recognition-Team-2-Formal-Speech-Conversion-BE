@@ -1,10 +1,8 @@
 import os
 from groq import AsyncGroq
 
-# API 키 설정 (발급받은 Groq API 키를 여기에 넣거나 환경변수로 관리하세요)
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "여기에_키_입력")
 
-# Groq 비동기 클라이언트 초기화
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 client = AsyncGroq(api_key=GROQ_API_KEY)
 
 class LLMService:
