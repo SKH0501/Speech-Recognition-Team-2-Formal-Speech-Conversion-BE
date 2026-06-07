@@ -45,9 +45,9 @@ class LLMService:
         # 이번에 유저가 한 말 추가
         messages.append({"role": "user", "content": user_message})
 
-        # 4. Groq API 호출 (llama3-8b-8192 모델이 빠르고 한국어도 꽤 잘합니다)
+        # 4. Groq API 호출 (llama3-8b-8192 -> llama-3.1-8b-instant 수정)
         response = await client.chat.completions.create(
-            model="llama3-8b-8192", 
+            model="llama-3.1-8b-instant", 
             messages=messages,
             temperature=0.7,
             max_tokens=150
