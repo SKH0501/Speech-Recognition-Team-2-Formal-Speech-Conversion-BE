@@ -49,9 +49,9 @@ class LLMService:
 
         # 4. Groq API 호출 (llama3-8b-8192 -> llama-3.1-8b-instant 수정)
         response = await client.chat.completions.create(
-            model="llama-3.1-8b-instant", 
+            model="llama-3.3-70b-versatile",  
             messages=messages,
-            temperature=0.7,
+            temperature=0.4,
             max_tokens=150
         )
 
