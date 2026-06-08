@@ -47,7 +47,7 @@ class LLMService:
         # 이번에 유저가 한 말 추가
         messages.append({"role": "user", "content": user_message})
 
-        # 4. Groq API 호출 (llama3-8b-8192 -> llama-3.1-8b-instant 수정)
+        # 4. Groq API 호출 (llama3-8b-8192 -> llama-3.1-8b-instant -> llama-3.3-70b-versatile 수정)
         response = await client.chat.completions.create(
             model="llama-3.3-70b-versatile",  
             messages=messages,
